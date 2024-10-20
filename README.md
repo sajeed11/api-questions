@@ -29,7 +29,7 @@
 ### Stateless vs. Stateful:
 
 - **REST:**
-  - Stateless, meaning each request is independent, and the server doesn't retain client information between requests.
+  - Stateless, meaning each request is independent, and the server doesn't retain يحتفظ client information between requests.
 - **SOAP:**
   - Can be either stateless or stateful, allowing for more complex operations where maintaining session state is necessary.
 
@@ -166,3 +166,21 @@
 | **Token Validity** | Short-lived access tokens, refresh tokens    | Stored on the client                                                |
 | **Complexity**     | More complex, involves multiple parties      | Simpler, typically involves only client/server                      |
 | **Security**       | Supports scopes, secure for delegated access | Secure, but care needed with token storage (local storage, cookies) |
+
+## When to prefer OAuth vs JWT:
+
+- **Choose OAuth when:**
+
+  - You need to allow users to grant limited access to third-party services.
+  - You want to delegate access to user data (e.g., using Google, Facebook, or X login).
+  - You are dealing with _third-party_ applications that need access to APIs with specific scopes of permission (e.g., read-only, write access).
+  - You need to handle _complex access control_ (roles, scopes) and support for refresh tokens.
+
+- **Choose JWT when:**
+  - Your are building an API where _stateless authentication_ is required (e.g., mobile apps, single-page web apps).
+  - You want a simple way to handle user login and authentication.
+  - You prefer a token-based solution that can be easily verified on the JWT contains all necessary information.
+
+## Combining OAuth and JWT:
+
+- It's common to combine OAuth with JWT. For example, an OAuth server can issue a JWT as an token. This allows OAuth to delegate authorization, while JWT is used to store user information and scopes within the token itself.
