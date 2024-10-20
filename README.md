@@ -156,7 +156,7 @@
 
 ---
 
-## Key Differences Between OAuth and JWT:
+### Key Differences Between OAuth and JWT:
 
 | Feature            | OAuth                                        | JWT                                                                 |
 | ------------------ | -------------------------------------------- | ------------------------------------------------------------------- |
@@ -167,7 +167,7 @@
 | **Complexity**     | More complex, involves multiple parties      | Simpler, typically involves only client/server                      |
 | **Security**       | Supports scopes, secure for delegated access | Secure, but care needed with token storage (local storage, cookies) |
 
-## When to prefer OAuth vs JWT:
+### When to prefer OAuth vs JWT:
 
 - **Choose OAuth when:**
 
@@ -181,6 +181,67 @@
   - You want a simple way to handle user login and authentication.
   - You prefer a token-based solution that can be easily verified on the JWT contains all necessary information.
 
-## Combining OAuth and JWT:
+### Combining OAuth and JWT:
 
 - It's common to combine OAuth with JWT. For example, an OAuth server can issue a JWT as an token. This allows OAuth to delegate authorization, while JWT is used to store user information and scopes within the token itself.
+
+## 4. Rate limiting and managing the flow of the requests
+
+Handling **rate limiting** and mangaing the flow of a large number of requests without overwhelming the server are critical to building a scalable and reliable system.
+
+### Understanding Rate Limiting:
+
+Rate limiting is technique used to control the amount of traffic sent or received by a server. It restricts the number of requests a client can make withing a specific time window (e.g., 1000 requests per minute). This is often done to:
+
+- **Prevent abuse:** protect the server from being overwhelmed by too many requests from a single client (e.g, DoS attacks).
+- **Ensure fair usage:** ensure resources are fairly distributed among clients.
+- **Optimize performance:** avoid server performance degradation due to excessive load.
+
+### Techniques to handle Rate Limiting
+
+To handle rate limiting on the client-side, you need strategies to stay within the allowed limits while ensuring your application continues to function smoothly.
+
+**a.Backoff and Retry Strategy**
+
+When your application encounters a rate limit error (typically HTTP status code `429 Too many requests`, it should back off and retry the request after a delay).
+
+- **Exponential Backoff:** A common strategy where the client waits progressively longer between retries. This helps reduce the load on the server and prevent hammering it with immediate retries.
+
+  - _Example:_ if the first retry waits 1 second, the second retry waits 2 seconds, the third retry waits 4 seconds, and so on.
+
+- **Retry-after Header:** If the server provides a `Retry-After` header in the response, follow that time before making another request.
+
+- **Example flow:**
+
+  - The client sends a request.
+  - If the server responds with `429 Too Many Requests` and includes a `Retry-After: 10` header, the client watis 10 seconds before retrying the request.
+
+**b.Rate Limiting Client-Side**
+
+To avoid hitting the server's rate limits in the first place, you can implement rate limiting on the client-side.
+
+- **Token Bucket Algorithm:** The server gives the client a certain number of tokens (representing allowed requests) in a time window (e.g., 100 requests per minute). The client uses one token per request and waits until more tokens are available if it runs out.
+
+- **Leaky Bucket Algorithm:** Like the token bucket algorithm, but requests are processed at a fixed (i.e., they "leak" تسريب out of the bucket). If the rate of incoming requests exceeds the leak rate, the bucket overflows and addtional requests are rejected or queued.
+
+**c.Queuing Requests**
+
+If your application generates many requests at once, consider queuing them and processing them at a controlled rate.
+
+- **Queue with delay:** Maintain a queue of requests and process at a rate that says within the server's rate limit. If the server allows 100 requests per minute, process requests at intervals of 600 ms each (60,000ms / 100).
+- **Priority Queuing:** Assign priorities to requests. For example, critical requests (e.g., user authentication) can be processed immediately, while less important ones (e.g., analytics) can be delayed or retried later.
+
+**d.Throttling**
+
+Throttling is a technique used to limit the rate of requests sent by the client. It can be implemented both server-side (enforced by the API) and client-side (controlled by the application).
+
+- **Fixed Window Throttling:** Limits requests based on fixed time windows (e.g., 1000 requests per minute).
+- **Sliding Window Throttling:** Dynamically calculates the rate over a sliding time window, providing more precise control over request flows.
+
+**e.Circuit Breaker Pattern**
+
+The **circuit breaker pattern** is used to prevent an application from repeatedly trying to access a failing service. If many requests to the server are failing (due to rate limiting or other reasons), the circuit breaker open, and no further requests are made until the service recovers.
+
+- **Closed:** Normal operation, requests are sent as usual.
+- **Open:** When failuers reach a certain threshold, further requests are blocked for a timeout period to avoid overwhelming the server.
+- **Half-open:** After a timeout, a limited number of requests are allowed to check if the server has recovered.
