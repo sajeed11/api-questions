@@ -343,52 +343,52 @@ Common CORS headers:
 
 If your application encounters a CORS error, it usually means that he server hasn't been configured to accept requests from your origin. Here's how to solve it:
 
-1.**Server-Side configuration**
+1. **Server-Side configuration**
 
 - **Modify Server Response Headers:** On your serer (e.g., Node.js, Django, NGINX), configure the CORS headers to allow access from te necessary origins.
 
   - Example in Node.js (Express):
 
-  ```javascript
-  const express = require("express");
-  const app = express();
+```javascript
+const express = require("express");
+const app = express();
 
-  app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "https://example.com"); // Allow specific origin
-    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"); // Allow specific methods
-    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization"); // Allow specific headers
-    next();
-  });
-  ```
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "https://example.com"); // Allow specific origin
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"); // Allow specific methods
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization"); // Allow specific headers
+  next();
+});
+```
 
 - **Allow All Origins (Not recommended for production):** Set `Access-Control-Allow-Origin` to `*` to allow all domains access. This is generally okay for public APIs but avoid if for sensitive data or authenticated endpoints.
 
-  2.**CORS in cloud platforms and API gateways**
+2. **CORS in cloud platforms and API gateways**
 
 - If you use a cloud provider or an API gateway (e.g. AWS API gateway, Firebase functions), configure the CORS settings in their interfaces. Most platforms provide easy way to enable CORS with the origins and headers you specify.
 
-  3.**Proxy server as a CORS Bypass (Client-Side solution)**
+3. **Proxy server as a CORS Bypass (Client-Side solution)**
 
 - For development or cases where you can't modify the server, you can set up a proxy server. This involves routing the requests through your own server on the same domain as your frontend, which then makes the request to the target API and returns the data to your client.
 
   - Example using a Node.js proxy:
 
-  ```javascript
-  const express = require("express");
-  const request = require("request");
-  const app = express();
+```javascript
+const express = require("express");
+const request = require("request");
+const app = express();
 
-  app.use("/proxy", (req, res) => {
-    const url = "https://api.example.com" + req.url;
-    req.pipe(request(url)).pipe(res);
-  });
-  ```
+app.use("/proxy", (req, res) => {
+  const url = "https://api.example.com" + req.url;
+  req.pipe(request(url)).pipe(res);
+});
+```
 
-  4.**JSONP (for Older browsers)**
+4. **JSONP (for Older browsers)**
 
 - JSONP (JSON with Padding) is an older technique for making cross-origin requests that wraps the response in JavaScript function. However, this is limited to `GET` requests and should generally be avoided in modern applications due to security concerns.
 
-  5.**Enable Preflight Requests**
+5. **Enable Preflight Requests**
 
 - For requests with methods like `PUT`, `DELETE`, or custom headers, browsers use a **preflight request** (an `OPTIONS` request) to check if the cross-origin call is allowed.
 
@@ -396,14 +396,14 @@ If your application encounters a CORS error, it usually means that he server has
 
   - Example in Node.js (Express)
 
-  ```javascript
-  app.options("*", (req, res) => {
-    res.header("Access-Control-Allow-Origin", "https://example.com");
-    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    res.send();
-  });
-  ```
+```javascript
+app.options("*", (req, res) => {
+  res.header("Access-Control-Allow-Origin", "https://example.com");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.send();
+});
+```
 
 ### Choosing the right solution
 
