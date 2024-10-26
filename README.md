@@ -323,7 +323,7 @@ Your clinet use these headers to dynamically adjust the flow of requests and pre
 
 ## 5. What is CORS? How can I fix **cross-origin** problem when I am requesting from different domains?
 
-**CORS** (Cross-Origin Resource Sharing) is a security feature implemented in web browsers that controls how resources (like API data) from one domain can be requested by another domain. By default, browsers block these cross-origin requests to protect users from certain types of attacks, like **Cross-Site Reqeust Forgery تزوير (CSRF)**
+> **Cross-Origin Resource Sharing (CORS)** is an HTTP-header based mechanism that allows a server to indicate any origins (domain, scheme, or port) other than its own from which a browser should permit loading resources. CORS also relies on a mechanism by which browsers make a "preflight" request to the server hosting the cross-origin resource, in order to check that the server will permit the actual request. In that preflight, the browser sends headers that indicate the HTTP method and headers that will be used in the actual request. (From [MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS))
 
 ### How CORS works
 
