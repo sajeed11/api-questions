@@ -214,7 +214,7 @@ When your application encounters a rate limit error (typically HTTP status code 
 - **Example flow:**
 
   - The client sends a request.
-  - If the server responds with `429 Too Many Requests` and includes a `Retry-After: 10` header, the client watis 10 seconds before retrying the request.
+  - If the server responds with `429 Too Many Requests` and includes a `Retry-After: 10` header, the client waits 10 seconds before retrying the request.
 
 **b.Rate Limiting Client-Side**
 
