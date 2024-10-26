@@ -329,6 +329,8 @@ Your clinet use these headers to dynamically adjust the flow of requests and pre
 
 When a web page on `domain-a.com` tries to make a request to `domain-b.com`, the browser checks with the server at `domain-b.com` to see if it allows cross-origin requests from `domain-a.com`. If `domain-b.com` is configured to allow this request, it will include specific CORS headers in its response to indicate which origins and HTTP methods are allowed.
 
+![Explanation image from MDN web doc](https://mdn.github.io/shared-assets/images/diagrams/http/cors/fetching-page-cors.svg)
+
 Common CORS headers:
 
 - `Access-Control-Allow-Origin`: Specifies which origin is allowed to access the resource.
