@@ -320,3 +320,97 @@ Your clinet use these headers to dynamically adjust the flow of requests and pre
 6. Rate-limit informtaion: Use rate-limiting headers provided by the server to manage client-side request flow.
 
 7. Asynchronous Processing: Offload time-consuming tasks to background processes or job queues to reduce while preventing overloading your server.
+
+## 5. What is CORS? How can I fix **cross-origin** problem when I am requesting from different domains?
+
+**CORS** (Cross-Origin Resource Sharing) is a security feature implemented in web browsers that controls how resources (like API data) from one domain can be requested by another domain. By default, browsers block these cross-origin requests to protect users from certain types of attacks, like **Cross-Site Reqeust Forgery تزوير (CSRF)**
+
+### How CORS works
+
+When a web page on `domain-a.com` tries to make a request to `domain-b.com`, the browser checks with the server at `domain-b.com` to see if it allows cross-origin requests from `domain-a.com`. If `domain-b.com` is configured to allow this request, it will include specific CORS headers in its response to indicate which origins and HTTP methods are allowed.
+
+Common CORS headers:
+
+- `Access-Control-Allow-Origin`: Specifies which origin is allowed to access the resource.
+
+- `Access-Control-Allow-Methods`: Lists the allowed HTTP methods, like `GET`, `POST`, etc.
+
+- `Access-Control-Allow-Headers`: Lists any custom headers that can be sent in the request.
+
+- `Access-Control-Allow-Credentials`: Allows cookies and HTTP authentication to be shared between origins.
+
+### Common CORS problems and solutions
+
+If your application encounters a CORS error, it usually means that he server hasn't been configured to accept requests from your origin. Here's how to solve it:
+
+1.**Server-Side configuration**
+
+- **Modify Server Response Headers:** On your serer (e.g., Node.js, Django, NGINX), configure the CORS headers to allow access from te necessary origins.
+
+  - Example in Node.js (Express):
+
+  ```javascript
+  const express = require("express");
+  const app = express();
+
+  app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "https://example.com"); // Allow specific origin
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"); // Allow specific methods
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization"); // Allow specific headers
+    next();
+  });
+  ```
+
+- **Allow All Origins (Not recommended for production):** Set `Access-Control-Allow-Origin` to `*` to allow all domains access. This is generally okay for public APIs but avoid if for sensitive data or authenticated endpoints.
+
+  2.**CORS in cloud platforms and API gateways**
+
+- If you use a cloud provider or an API gateway (e.g. AWS API gateway, Firebase functions), configure the CORS settings in their interfaces. Most platforms provide easy way to enable CORS with the origins and headers you specify.
+
+  3.**Proxy server as a CORS Bypass (Client-Side solution)**
+
+- For development or cases where you can't modify the server, you can set up a proxy server. This involves routing the requests through your own server on the same domain as your frontend, which then makes the request to the target API and returns the data to your client.
+
+  - Example using a Node.js proxy:
+
+  ```javascript
+  const express = require("express");
+  const request = require("request");
+  const app = express();
+
+  app.use("/proxy", (req, res) => {
+    const url = "https://api.example.com" + req.url;
+    req.pipe(request(url)).pipe(res);
+  });
+  ```
+
+  4.**JSONP (for Older browsers)**
+
+- JSONP (JSON with Padding) is an older technique for making cross-origin requests that wraps the response in JavaScript function. However, this is limited to `GET` requests and should generally be avoided in modern applications due to security concerns.
+
+  5.**Enable Preflight Requests**
+
+- For requests with methods like `PUT`, `DELETE`, or custom headers, browsers use a **preflight request** (an `OPTIONS` request) to check if the cross-origin call is allowed.
+
+- Ensure your server is set up ro respond to `OPTIONS` requests and returns the appropriate CORS headers.
+
+  - Example in Node.js (Express)
+
+  ```javascript
+  app.options("*", (req, res) => {
+    res.header("Access-Control-Allow-Origin", "https://example.com");
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.send();
+  });
+  ```
+
+### Choosing the right solution
+
+1.**Server-Controlled CORS Headers:** Use this if you have control over the server.
+
+2.**Proxy Solution:** Use a proxy for development or when dealing with servers you can't modify.
+
+3.**Cloud/API Gateway:** For managed APIs, configure CORS in the provider's settings.
+
+Settings the proper CORS headers on the server is the most secure and scalable appraoach to fix cross-origin issues.
