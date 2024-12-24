@@ -1,8 +1,8 @@
 # API and Protocols Guide
 
-<div style="text-align: center;">
+<h3 align= "center">
     <img src="assets/Animation%20-%201735035087456.gif" alt="Just a started gif">
-</div>
+</h3>
 
 ## 1. Difference Between REST and SOAP
 
